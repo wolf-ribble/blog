@@ -1,0 +1,113 @@
+为员工档案创建索引
+
+在 Elasticsearch 中，文档属于一种 类型(type)，各种各样的类型存在于一个 索引 中。你也可以通过类比传统的关系数据库得到一些大致的相似之处：
+
+关系数据库     ⇒ 数据库 ⇒ 表    ⇒ 行    ⇒ 列(Columns)
+Elasticsearch  ⇒ 索引   ⇒ 类型  ⇒ 文档  ⇒ 字段(Fields)
+
+
+创建索引和数据
+PUT /megacorp/employee/1
+{
+    "first_name" : "John",
+    "last_name" :  "Smith",
+    "age" :        25,
+    "about" :      "I love to go rock climbing",
+    "interests": [ "sports", "music" ]
+}
+
+
+搜索索引和数据
+GET /megacorp/employee/1
+
+DELETE 来删除这个文档，HEAD 是用来查询这个文档是否存在的。如果你想替换一个已经存在的文档，你只需要使用 PUT 再次发出请求即可。
+
+查询字符串(query string)
+使用环境marvel插件
+GET ribble/log/_search?q=age:22
+
+
+使用Query DSL搜索
+GET /ribble/log/_search
+{
+    "query" : {
+        "match" : {
+            "age" : "22"
+        }
+    }
+}
+
+段落搜索
+
+GET /megacorp/employee/_search
+{
+    "query" : {
+        "match_phrase" : {
+            "about" : "rock climbing"
+        }
+    }
+}
+
+
+统计
+
+GET /ribble/log/_search
+{
+  "aggs": {
+    "all_name": {
+      "terms": { "field": "name" }
+    }
+  }
+}
+
+
+集群设置
+
+我们在空的单节点集群中上创建一个叫做 blogs 的索引。一个索引默认设置了5个主分片，但是为了演示，我们这里只设置3个主分片和一组从分片（每个主分片有一个从分片对应）
+
+PUT /blogs
+{
+   "settings" : {
+      "number_of_shards" : 3,
+      "number_of_replicas" : 1
+   }
+}
+
+
+
+数据
+
+
+GET /ribble/log/2?_source=name,age
+
+更新数据
+  全量更新
+PUT ribble/log/1
+{
+  "name":"001"
+  "age" : 30
+   "about" : "song"
+}
+
+   增量更新
+POST /website/blog/1/_update
+{
+   "doc" : {
+      "tags" : [ "testing" ],
+      "views": 0
+   }
+}
+
+
+删除文档
+DELETE /website/blog/123
+
+
+版本控制可以用  version控制
+
+
+index type version 标识了唯一
+
+
+
+

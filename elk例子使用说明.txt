@@ -1,0 +1,67 @@
+input {
+    file {
+        path => ["/var/log/*.log", "/var/log/message"]
+        type => "system"
+        start_position => "beginning"
+        sincedb_path => "/dev/null"
+
+    }
+}
+
+
+output {
+
+      stdout {
+             codec => rubydebug
+      }
+}
+
+
+
+-----------------------------------------------------------------
+101.231.185.66
+
+
+input {
+    stdin { }
+}
+
+filter {
+
+    geoip {
+          source => "message"
+    }
+
+}
+
+
+output {
+
+      stdout {
+             codec => rubydebug
+      }
+}
+
+---------------------------------------------
+input {
+    file {
+        path => ["/home/ribble/test.log"]
+        type => "test"
+        start_position => "beginning"
+    }
+}
+
+
+
+output {
+    elasticsearch {
+        host => "192.168.2.94"
+        protocol => "http"
+        index => "mytest"
+        index_type => "%{type}"
+        workers => 5
+        template_overwrite => true
+    }
+}
+
+------------------------------------------------------------------
